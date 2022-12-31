@@ -1,7 +1,21 @@
-{% block content %}
-<h2>Login</h2>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
-{% endblock %}
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <body>
+    {% block content %}
+    <h2>Login</h2>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Login</button>
+    </form>
+    {% endblock %}
+  </body>
+</html>

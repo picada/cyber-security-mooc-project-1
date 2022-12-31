@@ -3,6 +3,7 @@ from django.db import migrations, transaction
 
 def add_users(apps, schema_editor):
     User = apps.get_model('todo', 'User')
+    # FLAW 4 Fix: do not use default usernames / passwords for admin users
     user_admin = User(username='admin', password='admin', is_superuser=True, is_staff=True)
     user_bobby = User(username='bobby', password='tables', is_superuser=False)
     user_chuck = User(username='chuck', password='norris', is_superuser=False)

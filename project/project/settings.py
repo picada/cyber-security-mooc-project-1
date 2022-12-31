@@ -20,9 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# (extra flaw here - the secret key should be encrypted)
 SECRET_KEY = '#4^i0u%9*)eq!s0qbjs)#*@=f4+9$+b)&nz!6ccow+v$vnk4()'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# FLAW 5 - Assuming the app was used in production, this should be set to False
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -121,4 +122,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 AUTH_USER_MODEL = "todo.User"
+
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'login/'
+LOGOUT_URL = 'logout/'
+
+
+
 
