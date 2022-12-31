@@ -1,6 +1,6 @@
 # cyber-security-mooc-project-1
 
-A simple, ugly and poorly-wirtten todo app created as a part of the course Cyber Security Base 2022. The idea is to include at least five different security flaws on the 2021 [OWASP Top Ten](https://owasp.org/www-project-top-ten/) list and to provide suggested fixes for these flaws. The application contains (at least) the flaws that listed further down in this document.
+A simple, ugly, poorly-wirtten and unsafe todo app created as a part of the course Cyber Security Base 2022. The idea is to include at least five different security flaws on the 2021 [OWASP Top Ten](https://owasp.org/www-project-top-ten/) list and to provide suggested fixes for these flaws. The application contains (at least) the flaws that listed further down in this document.
 
 More detailed assignment instructions: https://cybersecuritybase.mooc.fi/module-3.1)
 
