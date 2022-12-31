@@ -31,13 +31,13 @@ The app should now be running at http://127.0.0.1:8000/
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L34
 
-Currently it's possible to delete or modify the done status of todos that belong to other users. The vulnerability can be reproduced for exapmle by gointg to
+Currently it's possible to delete or modify the done status of todos that belong to other users simply by accessing the endpoints that handle deleting and changing the status of a todo. The vulnerability can be reproduced for exapmle by gointg to
 
 http://localhost:8000/1/delete/
 
-on any user account, and this would delete the todo with id 1 regardless if the current user is the owner of this todo or not (and assuming that there exists a todo with the id 1 in the database...). A malicious actor could for example just iterate through a list of possible id values, leading to major data loss.
+on any user account. For example this exact request would delete the todo with id 1 regardless if the current user is the owner of this todo or not (and assuming that there exists a todo with the id 1 in the database...). A malicious actor could for example just iterate through a list of possible id values, leading to major data loss.
 
-This flaw can be fixed by adding an access check that compares, if the current authenticated user is the user that is connected to the todo in question. If the user doesn't match, the access should be prevented.
+This flaw can be fixed by adding an access check that compares, if the current authenticated user is the user that is connected to the todo in question. If the user doesn't match, the access should be prevented. There are two points in the code that have this vulnerability, and the solution is commented out for both.
 
 Fix #1: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L34
 Fix #2: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L46
@@ -46,7 +46,7 @@ Fix #2: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/v
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/models.py#L7
 
-In the current implementation, user passwords are stored in in the database unencrypted in plain text format. This could be a very bad thing for example if the passwords would be leaked after a cyber attack.
+In the current implementation, user passwords are stored in in the database unencrypted in plain text format. This could be a very bad thing for example if the password list would be leaked after a cyber attack.
 
 The simplest fix in this case would be to just use Django's built-in password management functionality. Basically, the `set_password` and `check_password` could be removed from the file, in whcih case the model would fall back to using the ready-made functionalities for hashing and other password logic.
 
@@ -58,7 +58,9 @@ The functionality for adding new todos is vulnerable to SQL injections, which is
 
 ```Remeber to prevent injection'); DELETE FROM auth_user WHERE username=admin OR username IN ('```
 
-The most obvious way to fix this issue is to move away from making direct SQL queries and not handling user input in them. This can be done by using Django's builtin ORM for the databse queries. In addition, the database query is now executed with `cursor.executequeries()`, which allows multiple queries in the same operation. In case one would like to perform direct SQL queries, it's better to use `cursor.execute()`, which allows performing only one query at a time. This at least prevents adding other query types (such as DELETE or UPDATE) to the same query.
+One could also for example promote themselves to admin with an UPDATE query, delete tables from the database with a DROP query and so on. Needless to say, why this is a major security flaw.
+
+The most obvious way to fix this issue is to move away from making direct SQL queries and not handling user input in them. This can be done by using Django's builtin ORM for the databse queries. In addition, the database query is now executed with `cursor.executequeries()`, which allows performing multiple queries in the same operation. In case one would like to perform direct SQL queries, it's better to use `cursor.execute()`, which allows performing only one query at a time. This at least prevents adding other query types (such as DELETE or UPDATE) to the same query and adds some security.
 
 Fix #1: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L21
 Fix #2: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L18
@@ -67,16 +69,16 @@ Fix #2: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/v
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/migrations/0002_auto_20221230_2223.py#L6
 
-The adming account uses default login details (`username:admin` and `password:admin`), which is a major security hazard, as it's easy to guess. Anyone can log in to the admin panel at `http://localhost:8000/admin/` with these credentials, gaining read and write access to all the users and todos in the database.
+The adming account uses default login details (`username:admin` and `password:admin`), which is a major security hazard as the credentials are extremely easy to guess. Anyone can log in to the admin panel at `http://localhost:8000/admin/` with these credentials, gaining read and write access to all the users and todos in the database.
 
-This vulnerability can be fixed by changing the password for the admin account to a more secure one. Also to prevent this from happening again the settings should include Django's password validation definitions (as in here https://github.com/picada/cyber-security-mooc-project-1/blob/main/project/settings.py#L86), although these too can be bypassed when creating a user from the terminal.
+This vulnerability can be fixed by changing the password for the admin account to a more secure one. All passwords should always be strong, but especially for the admin account. Also to prevent this from happening again the settings should include Django's password validation definitions (as in here https://github.com/picada/cyber-security-mooc-project-1/blob/main/project/settings.py#L86), although these too can be bypassed when creating a user from the terminal.
 
 ### FLAW 5: A09 (Security Logging and Monitoring Failures)
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/project/settings.py#L26
 
-There is no decent logging or error monitoring whatsoever. There are no try-except-blocks, all errors are thrown to the user as it is. In addition, debugging is left on in the settings, which should never happen in production since having the debug mode enabled in production can expose sensitive information. 
+There is no decent logging or error monitoring in the app whatsoever. There are no try-except-blocks, all errors are thrown to the user as it is. In addition, debugging is left on in the settings, which should never happen in production since having the debug mode enabled in production can expose sensitive information to the users.
 
-As a fix, the debug flag in settings.py should be changed to `DEBUG = False`. Also proper logging should be added to all transactions, and possible errors should be caught and handled properly.
+As a fix, the debug flag in settings.py should be changed to `DEBUG = False`. Also proper logging should be added to all transactions, and possible errors should be caught and handled properly. This is a more comprehensive task, whcih is why any exact fis isn't included in the code.
 
 
