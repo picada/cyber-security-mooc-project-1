@@ -62,11 +62,15 @@ The most obvious way to fix this issue is to move away from making direct SQL qu
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/migrations/0002_auto_20221230_2223.py#L6
 
+The adming account uses default login details (`username:admin` and `password:admin`), which is a major security hazard, as it's easy to guess. Anyone can log in to the admin panel at `http://localhost:8000/admin/` with these credentials, gaining read and write access to all the users and todos in the database.
+
+This vulnerability can be fixed by changing the password for the admin account to a more secure one. Also to prevent this from happening again the settings should include Django's password validation definitions (as in here https://github.com/picada/cyber-security-mooc-project-1/blob/main/project/settings.py#L86), although these too can be bypassed when creating a user from the terminal.
+
 ### FLAW 5: A09 (Security Logging and Monitoring Failures)
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/project/settings.py#L26
 
 There is no decent logging or error monitoring whatsoever. There are no try-except-blocks, all errors are thrown to the user as it is. In addition, debugging is left on in the settings, which should never happen in production since having the debug mode enabled in production can expose sensitive information. 
 
-As a fix, the debug flag in settings.py should be changed to DEBUG = False. Also proper logging should be added to all transactions, and possible errors should be caught and handled properly.
+As a fix, the debug flag in settings.py should be changed to `DEBUG = False`. Also proper logging should be added to all transactions, and possible errors should be caught and handled properly.
 
