@@ -31,13 +31,21 @@ The app should now be running at http://127.0.0.1:8000/
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/views.py#L34
 
-In the current implementation, user passwords are stored in in the database unencrypted in plain text format. This could be a very bad thing for example if the passwords would be leaked after a cyber attack.
+Currently it's possible to delete or modify the done status of todos of other users. The vulnerability can be reproduced for exapmle by gointg to
 
-The simplest fix in this case would be to just use Django's built-in password management functionality. Basically, the `set_password` and `check_password` could be removed from the file, in whcih case the model would fall back to using the ready-made functionalities for hashing and other password logic.
+http://localhost:8000/1/delete/
+
+on any user account, and this would delete the todo with id 1 regardless if the current user is the owner of this todo or not (and assuming that there exists a todo with the id 1 in the database...). A malicious actor could for example just iterate through a list of possible id values, leading to major data loss.
+
+This flaw can be fixed by adding an access check that compares, if the current authenticated user is the user that is connected to the todo in question. If the user doesn't match, the access should be prevented.
 
 ### FLAW 2: A02 (Cryptographic Failure)
 
 Code pointer: https://github.com/picada/cyber-security-mooc-project-1/blob/main/todo/models.py#L7
+
+In the current implementation, user passwords are stored in in the database unencrypted in plain text format. This could be a very bad thing for example if the passwords would be leaked after a cyber attack.
+
+The simplest fix in this case would be to just use Django's built-in password management functionality. Basically, the `set_password` and `check_password` could be removed from the file, in whcih case the model would fall back to using the ready-made functionalities for hashing and other password logic.
 
 ### FLAW 3: A03 (Injection)
 
@@ -48,7 +56,7 @@ The functionality for adding new todos is vulnerable to SQL injections, which is
 
 ```Remeber to prevent injection'); DELETE FROM auth_user WHERE username=admin OR username IN ('```
 
-The most obvious way to fix this issue is to move away from making direct SQL queries and not handling user input in them. This can be done by using Django's builtin ORM for the databse queries. In addition, the database query is now executed with cursor.executequeries(), which allows multiple queries in the same operation. In case one would like to perform direct SQL queries, it's better to use `cursor.execute()`, which allows performing only one query at a time. This at least prevents adding other query types (such as DELETE or UPDATE) to the same query.
+The most obvious way to fix this issue is to move away from making direct SQL queries and not handling user input in them. This can be done by using Django's builtin ORM for the databse queries. In addition, the database query is now executed with `cursor.executequeries()`, which allows multiple queries in the same operation. In case one would like to perform direct SQL queries, it's better to use `cursor.execute()`, which allows performing only one query at a time. This at least prevents adding other query types (such as DELETE or UPDATE) to the same query.
 
 ### FLAW 4: A05 (Security Misconfiguration)
 
