@@ -13,9 +13,9 @@ def add(request):
 
         ## FLAW 3
         query = "INSERT INTO todo_todo (user_id, done, title) VALUES ('%s', '%s', '%s');" % (request.user.id, False, title)
-        print(query)
 
         cursor = connection.cursor()
+        ## FLAW 3 Fix: use cursor.execute() instead of cursors.executescript()
         cursor.executescript(query)
         
         ## FLAW 3 Fix: Uncomment the code below
