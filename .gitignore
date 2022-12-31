@@ -7,7 +7,7 @@
 *.pyc
 __pycache__/
 local_settings.py
-db.sqlite3
+db
 db.sqlite3-journal
 media
 
@@ -280,5 +280,7 @@ poetry.toml
 # Ignore all local history of files
 .history
 .ionide
+
+.DS_Store
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode
